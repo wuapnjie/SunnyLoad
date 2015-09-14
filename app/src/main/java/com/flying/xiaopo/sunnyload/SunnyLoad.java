@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 
 /**
+ * 自定义视图
  * Created by xiaopo on 2015/9/12.
  */
 public class SunnyLoad extends View {
@@ -92,12 +93,12 @@ public class SunnyLoad extends View {
         mPaint.setAntiAlias(true);
         mPaint.setStrokeWidth(30f);
 
-        post(new Runnable() {
+        postDelayed(new Runnable() {
             @Override
             public void run() {
                 startFirstAnim(0);
             }
-        });
+        },1000);
 
         invalidate();
     }
@@ -125,9 +126,9 @@ public class SunnyLoad extends View {
     }
 
     private void startFirstAnim(long delayed) {
-        if (maxRadius == -1) maxRadius = this.VIEW_WIDTH / 6.7f;
-        if (minRadius == -1) minRadius = this.VIEW_WIDTH / 30;
-        if (maxLineLength == -1) maxLineLength = this.getMaxRadius() / 3;
+        if (maxRadius == -1) maxRadius = this.VIEW_WIDTH * 0.1492f;
+        if (minRadius == -1) minRadius = this.VIEW_WIDTH * 0.0333f;
+        if (maxLineLength == -1) maxLineLength = this.maxRadius * 0.3333f;
 
 //        System.out.println("FirstAnim");
 
@@ -138,8 +139,8 @@ public class SunnyLoad extends View {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                setIsFirstAnim(false);
-                changeIndex(INDEX_ONE);
+                isFirstAnim=false;
+                index = INDEX_ONE;
                 startSecondAnim();
                 super.onAnimationEnd(animation);
             }
@@ -160,18 +161,15 @@ public class SunnyLoad extends View {
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 if (index != INDEXES.length) {
-                    changeIndex(index + 1);
+                    index++;
                     startSecondAnim();
                 } else {
-                    setIsFinished(true);
+                    isFirstAnim=true;
+                    isFinished =true;
                 }
             }
         });
         length_animator.start();
-    }
-
-    private void changeIndex(int index) {
-        this.index = index;
     }
 
     @Override
@@ -180,37 +178,40 @@ public class SunnyLoad extends View {
         if (isFinished) {
             //清除缓存
             mCacheCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-            startFirstAnim(200);
-            setIsFinished(false);
+            startFirstAnim(1000);
+            isFinished=false;
             return;
         }
-        mRectF.left = VIEW_WIDTH / 2.06f - mRadius;
-        mRectF.right = VIEW_WIDTH / 2.06f + mRadius;
-        mRectF.top = VIEW_HEIGHT / 2 - mRadius;
-        mRectF.bottom = VIEW_HEIGHT / 2 + mRadius;
 
-        mCacheCanvas.drawArc(mRectF, mStartAngel, 14, false, mPaint);
-        canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
+        if (isFirstAnim) {
+            mRectF.left = VIEW_WIDTH * 0.4854f - mRadius;
+            mRectF.right = VIEW_WIDTH * 0.4854f + mRadius;
+            mRectF.top = VIEW_HEIGHT * 0.5f - mRadius;
+            mRectF.bottom = VIEW_HEIGHT * 0.5f + mRadius;
+
+            mCacheCanvas.drawArc(mRectF, mStartAngel, 20, false, mPaint);
+            canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
+        }
         if (!isFirstAnim) {
             switch (index) {
                 case INDEX_ONE:
-                    mCacheCanvas.drawLine(VIEW_WIDTH / 2 - (maxRadius + VIEW_WIDTH / 23.5f) * 0.9397f, VIEW_HEIGHT / 2 - (maxRadius + VIEW_WIDTH / 23.5f) * 0.3420f, VIEW_WIDTH / 2 - ((maxRadius + VIEW_WIDTH / 23.5f) + mLineLength) * 0.9397f, VIEW_HEIGHT / 2 - ((maxRadius + VIEW_WIDTH / 23.5f) + mLineLength) * 0.3420f, mPaint);
+                    mCacheCanvas.drawLine(VIEW_WIDTH * 0.5f - (maxRadius + VIEW_WIDTH * 0.04255f) * 0.9397f, VIEW_HEIGHT * 0.5f - (maxRadius + VIEW_WIDTH * 0.04255f) * 0.3420f, VIEW_WIDTH * 0.5f - ((maxRadius + VIEW_WIDTH * 0.04255f) + mLineLength) * 0.9397f, VIEW_HEIGHT * 0.5f - ((maxRadius + VIEW_WIDTH * 0.04255f) + mLineLength) * 0.3420f, mPaint);
                     canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
                     break;
                 case INDEX_TWO:
-                    mCacheCanvas.drawLine(VIEW_WIDTH / 2 - (maxRadius + VIEW_WIDTH / 23.5f) * 0.5000f, VIEW_HEIGHT / 2 - (maxRadius + VIEW_WIDTH / 23.5f) * 0.8660f, VIEW_WIDTH / 2 - ((maxRadius + VIEW_WIDTH / 23.5f) + mLineLength) * 0.5000f, VIEW_HEIGHT / 2 - ((maxRadius + VIEW_WIDTH / 23.5f) + mLineLength) * 0.8660f, mPaint);
+                    mCacheCanvas.drawLine(VIEW_WIDTH * 0.5f - (maxRadius + VIEW_WIDTH * 0.04255f) * 0.5000f, VIEW_HEIGHT * 0.5f - (maxRadius + VIEW_WIDTH * 0.04255f) * 0.8660f, VIEW_WIDTH * 0.5f - ((maxRadius + VIEW_WIDTH * 0.04255f) + mLineLength) * 0.5000f, VIEW_HEIGHT * 0.5f - ((maxRadius + VIEW_WIDTH * 0.04255f) + mLineLength) * 0.8660f, mPaint);
                     canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
                     break;
                 case INDEX_THREE:
-                    mCacheCanvas.drawLine(VIEW_WIDTH / 2 + (maxRadius + VIEW_WIDTH / 23.5f) * 0.1736f, VIEW_HEIGHT / 2 - (maxRadius + VIEW_WIDTH / 23.5f) * 0.9848f, VIEW_WIDTH / 2 + ((maxRadius + VIEW_WIDTH / 23.5f) + mLineLength) * 0.1736f, VIEW_HEIGHT / 2 - ((maxRadius + VIEW_WIDTH / 23.5f) + mLineLength) * 0.9848f, mPaint);
+                    mCacheCanvas.drawLine(VIEW_WIDTH * 0.5f + (maxRadius + VIEW_WIDTH * 0.04255f) * 0.1736f, VIEW_HEIGHT * 0.5f - (maxRadius + VIEW_WIDTH * 0.04255f) * 0.9848f, VIEW_WIDTH * 0.5f + ((maxRadius + VIEW_WIDTH * 0.04255f) + mLineLength) * 0.1736f, VIEW_HEIGHT * 0.5f - ((maxRadius + VIEW_WIDTH * 0.04255f) + mLineLength) * 0.9848f, mPaint);
                     canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
                     break;
                 case INDEX_FOUR:
-                    mCacheCanvas.drawLine(VIEW_WIDTH / 2 + (maxRadius + VIEW_WIDTH / 23.5f) * 0.7660f, VIEW_HEIGHT / 2 - (maxRadius + VIEW_WIDTH / 23.5f) * 0.6428f, VIEW_WIDTH / 2 + ((maxRadius + VIEW_WIDTH / 23.5f) + mLineLength) * 0.7660f, VIEW_HEIGHT / 2 - ((maxRadius + VIEW_WIDTH / 23.5f) + mLineLength) * 0.6428f, mPaint);
+                    mCacheCanvas.drawLine(VIEW_WIDTH * 0.5f + (maxRadius + VIEW_WIDTH * 0.04255f) * 0.7660f, VIEW_HEIGHT * 0.5f - (maxRadius + VIEW_WIDTH * 0.04255f) * 0.6428f, VIEW_WIDTH * 0.5f + ((maxRadius + VIEW_WIDTH * 0.04255f) + mLineLength) * 0.7660f, VIEW_HEIGHT * 0.5f - ((maxRadius + VIEW_WIDTH * 0.04255f) + mLineLength) * 0.6428f, mPaint);
                     canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
                     break;
                 case INDEX_FIVE:
-                    mCacheCanvas.drawLine(VIEW_WIDTH / 2 + (maxRadius + VIEW_WIDTH / 23.5f), VIEW_HEIGHT / 2, VIEW_WIDTH / 2 + ((maxRadius + VIEW_WIDTH / 23.5f) + mLineLength), VIEW_HEIGHT / 2, mPaint);
+                    mCacheCanvas.drawLine(VIEW_WIDTH * 0.5f + (maxRadius + VIEW_WIDTH * 0.04255f), VIEW_HEIGHT * 0.5f, VIEW_WIDTH * 0.5f + ((maxRadius + VIEW_WIDTH * 0.04255f) + mLineLength), VIEW_HEIGHT * 0.5f, mPaint);
                     canvas.drawBitmap(mCacheBitmap, 0, 0, mPaint);
                     break;
             }
